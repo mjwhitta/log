@@ -19,7 +19,7 @@ package main
 
 import "gitlab.com/mjwhitta/log"
 
-var logger *log.File
+var logger *log.Messenger
 
 func main() {
     var e error
@@ -36,13 +36,13 @@ func main() {
     log.Err("Error message")
 
     // Will log to stdout (w/o timestamp)
-    logger, _ = log.New()
+    logger = log.NewMessenger()
     logger.Info("Info message")
     logger.Good("Good message")
     logger.Err("Error message")
 
     // Will now log to stdout (w/o timestamp) and file (w/ timestamp)
-    if logger, e = log.New("/tmp/test.log"); e != nil {
+    if logger, e = log.NewFileMessenger("/tmp/test.log"); e != nil {
         panic(e)
     }
     logger.Info("Info message")
@@ -54,6 +54,17 @@ func main() {
     logger.Info("Info message")
     logger.Good("Good message")
     logger.Err("Error message")
+
+    // Disable color on stdout
+    logger.SetColor(false)
+    logger.Info("Info message")
+    logger.Good("Good message")
+    logger.Err("Error message")
+
+    // Close logger
+    if e = logger.Close(); e != nil {
+        panic(e)
+    }
 }
 ```
 
