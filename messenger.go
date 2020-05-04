@@ -2,6 +2,7 @@ package log
 
 import (
 	"os"
+	"sync"
 	"time"
 
 	hl "gitlab.com/mjwhitta/hilighter"
@@ -30,6 +31,7 @@ func NewFileMessenger(fn string, ts ...bool) (*Messenger, error) {
 	var e error
 	var file *os.File
 	var m *Messenger = NewMessenger(ts...)
+	var mutex = sync.Mutex{}
 
 	if len(fn) == 0 {
 		return nil, hl.Errorf("No filename provided")
@@ -41,11 +43,18 @@ func NewFileMessenger(fn string, ts ...bool) (*Messenger, error) {
 
 	m.SetDoneHandler(
 		func() error {
+			var e error
+
+			mutex.Lock()
+
 			if file != nil {
-				return file.Close()
+				e = file.Close()
+				file = nil
 			}
 
-			return nil
+			mutex.Unlock()
+
+			return e
 		},
 	)
 
@@ -53,12 +62,15 @@ func NewFileMessenger(fn string, ts ...bool) (*Messenger, error) {
 		func(ts string, msg string, tsMsg string) error {
 			var e error
 
+			mutex.Lock()
+
 			if file != nil {
 				_, e = file.WriteString(hl.Plain(tsMsg) + "\n")
-				return e
 			}
 
-			return nil
+			mutex.Unlock()
+
+			return e
 		},
 	)
 
