@@ -3,7 +3,6 @@ package log
 import (
 	"os"
 	"sync"
-	"time"
 
 	hl "gitlab.com/mjwhitta/hilighter"
 )
@@ -12,7 +11,7 @@ import (
 type CustomDoneHandler func() error
 
 // CustomLogHandler is a function pointer.
-type CustomLogHandler func(ts string, msg string, tsMsg string) error
+type CustomLogHandler func(msg Message) error
 
 // Messenger will log to STDOUT as well as call a custom log handlers
 // defined by the user. If Timestamp is true, then messages are
@@ -59,13 +58,13 @@ func NewFileMessenger(fn string, ts ...bool) (*Messenger, error) {
 	)
 
 	m.SetLogHandler(
-		func(ts string, msg string, tsMsg string) error {
+		func(msg Message) error {
 			var e error
 
 			mutex.Lock()
 
 			if file != nil {
-				_, e = file.WriteString(hl.Plain(tsMsg) + "\n")
+				_, e = file.WriteString(hl.Plain(msg.TimeText) + "\n")
 			}
 
 			mutex.Unlock()
@@ -110,21 +109,19 @@ func (m *Messenger) Close() error {
 	return nil
 }
 
-func (m *Messenger) doLog(msg string) error {
+func (m *Messenger) doLog(msg Message) error {
 	var e error
-	var ts = time.Now().Format(time.RFC3339)
-	var tsMsg = ts + ": " + msg
 
 	if m.Stdout {
 		if m.Timestamp {
-			hl.Println(tsMsg)
+			hl.Println(msg.TimeText)
 		} else {
-			hl.Println(msg)
+			hl.Println(msg.Text)
 		}
 	}
 
 	for _, f := range m.logHandlers {
-		if e = f(ts, msg, tsMsg); e != nil {
+		if e = f(msg); e != nil {
 			return e
 		}
 	}
@@ -134,7 +131,7 @@ func (m *Messenger) doLog(msg string) error {
 
 // Err will log an error message.
 func (m *Messenger) Err(msg string) error {
-	return m.doLog(hl.Red("[!] " + msg))
+	return m.doLog(NewMessage(TypeErr, msg))
 }
 
 // Errf will log an error message using a format string.
@@ -144,7 +141,7 @@ func (m *Messenger) Errf(format string, args ...interface{}) error {
 
 // Good will log a good message.
 func (m *Messenger) Good(msg string) error {
-	return m.doLog(hl.Green("[+] " + msg))
+	return m.doLog(NewMessage(TypeGood, msg))
 }
 
 // Goodf will log a good message using a format string.
@@ -154,7 +151,7 @@ func (m *Messenger) Goodf(format string, args ...interface{}) error {
 
 // Info will log an info message.
 func (m *Messenger) Info(msg string) error {
-	return m.doLog(hl.White("[*] " + msg))
+	return m.doLog(NewMessage(TypeInfo, msg))
 }
 
 // Infof will log an info message using a format string.
@@ -164,7 +161,7 @@ func (m *Messenger) Infof(format string, args ...interface{}) error {
 
 // Msg will log a message as is.
 func (m *Messenger) Msg(msg string) error {
-	return m.doLog(msg)
+	return m.doLog(NewMessage(TypeMsg, msg))
 }
 
 // Msgf will log a message as is using a format string.
@@ -191,7 +188,7 @@ func (m *Messenger) SetLogHandler(handler CustomLogHandler) {
 
 // SubInfo will log a subinfo message.
 func (m *Messenger) SubInfo(msg string) error {
-	return m.doLog(hl.Cyan("[=] " + msg))
+	return m.doLog(NewMessage(TypeSubInfo, msg))
 }
 
 // SubInfof will log a subinfo message using a format string.
@@ -204,7 +201,7 @@ func (m *Messenger) SubInfof(
 
 // Warn will log a warn message.
 func (m *Messenger) Warn(msg string) error {
-	return m.doLog(hl.Yellow("[-] " + msg))
+	return m.doLog(NewMessage(TypeWarn, msg))
 }
 
 // Warnf will log a warn message using a format string.

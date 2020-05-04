@@ -66,13 +66,26 @@ func main() {
 
     // CustomLogHandler
     logger.SetLogHandler(
-        func(ts string, msg string, tsMsg string) error {
-            hl.Println("Custom 1")
+        func(msg log.Message) error {
+            switch msg.Type {
+            case log.TypeErr:
+                hl.Println("Custom 1 - error")
+            case log.TypeGood:
+                hl.Println("Custom 1 - good")
+            case log.TypeInfo:
+                hl.Println("Custom 1 - info")
+            case log.TypeMsg:
+                hl.Println("Custom 1 - message")
+            case log.TypeSubInfo:
+                hl.Println("Custom 1 - additional info")
+            case log.TypeWarn:
+                hl.Println("Custom 1 - warning")
+            }
             return nil
         },
     )
     logger.AddLogHandler(
-        func(ts string, msg string, tsMsg string) error {
+        func(msg log.Message) error {
             hl.Println("Custom 2")
             return nil
         },
