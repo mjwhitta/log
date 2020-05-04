@@ -7,17 +7,24 @@ import (
 	hl "gitlab.com/mjwhitta/hilighter"
 )
 
-// Messenger will log to stdout as well as call a custom log handler
+// CustomDoneHandler is a function pointer.
+type CustomDoneHandler func() error
+
+// CustomLogHandler is a function pointer.
+type CustomLogHandler func(ts string, msg string, tsMsg string) error
+
+// Messenger will log to STDOUT as well as call a custom log handlers
 // defined by the user. If Timestamp is true, then messages are
 // prepended with an RFC3339 timestamp.
 type Messenger struct {
-	doneHandler func() error
-	logHandler  func(msg string, tsMsg string) error
-	Timestamp   bool
+	doneHandlers []CustomDoneHandler
+	logHandlers  []CustomLogHandler
+	Stdout       bool
+	Timestamp    bool
 }
 
 // NewFileMessenger will return a new Messenger instance for logging
-// to a file. The log file will always show the timestamp, but stdout
+// to a file. The log file will always show the timestamp, but STDOUT
 // will only show the timestamp if Timestamp is true.
 func NewFileMessenger(fn string, ts ...bool) (*Messenger, error) {
 	var e error
@@ -43,7 +50,7 @@ func NewFileMessenger(fn string, ts ...bool) (*Messenger, error) {
 	)
 
 	m.SetLogHandler(
-		func(msg string, tsMsg string) error {
+		func(ts string, msg string, tsMsg string) error {
 			var e error
 
 			if file != nil {
@@ -60,35 +67,54 @@ func NewFileMessenger(fn string, ts ...bool) (*Messenger, error) {
 
 // NewMessenger will return a new Messenger instance for logging.
 func NewMessenger(ts ...bool) *Messenger {
-	return &Messenger{Timestamp: ((len(ts) > 0) && ts[0])}
+	return &Messenger{
+		Stdout:    true,
+		Timestamp: ((len(ts) > 0) && ts[0]),
+	}
+}
+
+// AddDoneHandler will add a handler for custom actions when the
+// Messenger instance is closed.
+func (m *Messenger) AddDoneHandler(handler CustomDoneHandler) {
+	m.doneHandlers = append(m.doneHandlers, handler)
+}
+
+// AddLogHandler will add a handler for custom actions when the
+// Messenger logs a message.
+func (m *Messenger) AddLogHandler(handler CustomLogHandler) {
+	m.logHandlers = append(m.logHandlers, handler)
 }
 
 // Close will call the done handler.
 func (m *Messenger) Close() error {
-	if m.doneHandler != nil {
-		return m.doneHandler()
+	var e error
+
+	for _, f := range m.doneHandlers {
+		if e = f(); e != nil {
+			return e
+		}
 	}
 
 	return nil
 }
 
-// SetColor will disable/enable colors for stdout.
-func (m *Messenger) SetColor(enabled bool) {
-	hl.Disable(!enabled)
-}
-
 func (m *Messenger) doLog(msg string) error {
-	var ts = time.Now().Format(time.RFC3339) + ": "
-	var tsMsg = ts + msg
+	var e error
+	var ts = time.Now().Format(time.RFC3339)
+	var tsMsg = ts + ": " + msg
 
-	if m.Timestamp {
-		hl.Println(tsMsg)
-	} else {
-		hl.Println(msg)
+	if m.Stdout {
+		if m.Timestamp {
+			hl.Println(tsMsg)
+		} else {
+			hl.Println(msg)
+		}
 	}
 
-	if m.logHandler != nil {
-		return m.logHandler(msg, tsMsg)
+	for _, f := range m.logHandlers {
+		if e = f(ts, msg, tsMsg); e != nil {
+			return e
+		}
 	}
 
 	return nil
@@ -134,18 +160,21 @@ func (m *Messenger) Msgf(format string, args ...interface{}) error {
 	return m.Msg(hl.Sprintf(format, args...))
 }
 
-// SetDoneHandler will set the handler for when the Messenger instance
-// is closed.
-func (m *Messenger) SetDoneHandler(handler func() error) {
-	m.doneHandler = handler
+// SetColor will disable/enable colors for STDOUT.
+func (m *Messenger) SetColor(enabled bool) {
+	hl.Disable(!enabled)
+}
+
+// SetDoneHandler will set the handler for custom actions when the
+// Messenger instance is closed.
+func (m *Messenger) SetDoneHandler(handler CustomDoneHandler) {
+	m.doneHandlers = []CustomDoneHandler{handler}
 }
 
 // SetLogHandler will set the handler for custom actions when the
 // Messenger logs a message.
-func (m *Messenger) SetLogHandler(
-	handler func(msg string, tsMsg string) error,
-) {
-	m.logHandler = handler
+func (m *Messenger) SetLogHandler(handler CustomLogHandler) {
+	m.logHandlers = []CustomLogHandler{handler}
 }
 
 // SubInfo will log a subinfo message.

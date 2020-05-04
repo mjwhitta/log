@@ -17,7 +17,10 @@ $ go get -u gitlab.com/mjwhitta/log
 ```
 package main
 
-import "gitlab.com/mjwhitta/log"
+import (
+    hl "gitlab.com/mjwhitta/hilighter"
+    "gitlab.com/mjwhitta/log"
+)
 
 var logger *log.Messenger
 
@@ -57,6 +60,23 @@ func main() {
 
     // Disable color on stdout
     logger.SetColor(false)
+    logger.Info("Info message")
+    logger.Good("Good message")
+    logger.Err("Error message")
+
+    // CustomLogHandler
+    logger.SetLogHandler(
+        func(ts string, msg string, tsMsg string) error {
+            hl.Println("Custom 1")
+            return nil
+        },
+    )
+    logger.AddLogHandler(
+        func(ts string, msg string, tsMsg string) error {
+            hl.Println("Custom 2")
+            return nil
+        },
+    )
     logger.Info("Info message")
     logger.Good("Good message")
     logger.Err("Error message")
