@@ -7,8 +7,8 @@ import (
 	hl "gitlab.com/mjwhitta/hilighter"
 )
 
-// CustomDoneHandler is a function pointer.
-type CustomDoneHandler func() error
+// CustomCloseHandler is a function pointer.
+type CustomCloseHandler func() error
 
 // CustomLogHandler is a function pointer.
 type CustomLogHandler func(msg Message) error
@@ -17,10 +17,11 @@ type CustomLogHandler func(msg Message) error
 // defined by the user. If Timestamp is true, then messages are
 // prepended with an RFC3339 timestamp.
 type Messenger struct {
-	doneHandlers []CustomDoneHandler
-	logHandlers  []CustomLogHandler
-	Stdout       bool
-	Timestamp    bool
+	closeHandlers []CustomCloseHandler
+	handlerMutex  sync.RWMutex
+	logHandlers   []CustomLogHandler
+	Stdout        bool
+	Timestamp     bool
 }
 
 // NewFileMessenger will return a new Messenger instance for logging
@@ -40,7 +41,7 @@ func NewFileMessenger(fn string, ts ...bool) (*Messenger, error) {
 		return nil, e
 	}
 
-	m.SetDoneHandler(
+	m.SetCloseHandler(
 		func() error {
 			var e error
 
@@ -79,28 +80,33 @@ func NewFileMessenger(fn string, ts ...bool) (*Messenger, error) {
 // NewMessenger will return a new Messenger instance for logging.
 func NewMessenger(ts ...bool) *Messenger {
 	return &Messenger{
-		Stdout:    true,
-		Timestamp: ((len(ts) > 0) && ts[0]),
+		handlerMutex: sync.RWMutex{},
+		Stdout:       true,
+		Timestamp:    ((len(ts) > 0) && ts[0]),
 	}
 }
 
-// AddDoneHandler will add a handler for custom actions when the
+// AddCloseHandler will add a handler for custom actions when the
 // Messenger instance is closed.
-func (m *Messenger) AddDoneHandler(handler CustomDoneHandler) {
-	m.doneHandlers = append(m.doneHandlers, handler)
+func (m *Messenger) AddCloseHandler(handler CustomCloseHandler) {
+	m.handlerMutex.Lock()
+	m.closeHandlers = append(m.closeHandlers, handler)
+	m.handlerMutex.Unlock()
 }
 
 // AddLogHandler will add a handler for custom actions when the
 // Messenger logs a message.
 func (m *Messenger) AddLogHandler(handler CustomLogHandler) {
+	m.handlerMutex.Lock()
 	m.logHandlers = append(m.logHandlers, handler)
+	m.handlerMutex.Unlock()
 }
 
-// Close will call the done handler.
+// Close will call the close handler.
 func (m *Messenger) Close() error {
 	var e error
 
-	for _, f := range m.doneHandlers {
+	for _, f := range m.closeHandlers {
 		if e = f(); e != nil {
 			return e
 		}
@@ -120,11 +126,13 @@ func (m *Messenger) doLog(msg Message) error {
 		}
 	}
 
+	m.handlerMutex.RLock()
 	for _, f := range m.logHandlers {
 		if e = f(msg); e != nil {
 			return e
 		}
 	}
+	m.handlerMutex.RUnlock()
 
 	return nil
 }
@@ -169,21 +177,25 @@ func (m *Messenger) Msgf(format string, args ...interface{}) error {
 	return m.Msg(hl.Sprintf(format, args...))
 }
 
+// SetCloseHandler will set the handler for custom actions when the
+// Messenger instance is closed.
+func (m *Messenger) SetCloseHandler(handler CustomCloseHandler) {
+	m.handlerMutex.Lock()
+	m.closeHandlers = []CustomCloseHandler{handler}
+	m.handlerMutex.Unlock()
+}
+
 // SetColor will disable/enable colors for STDOUT.
 func (m *Messenger) SetColor(enabled bool) {
 	hl.Disable(!enabled)
 }
 
-// SetDoneHandler will set the handler for custom actions when the
-// Messenger instance is closed.
-func (m *Messenger) SetDoneHandler(handler CustomDoneHandler) {
-	m.doneHandlers = []CustomDoneHandler{handler}
-}
-
 // SetLogHandler will set the handler for custom actions when the
 // Messenger logs a message.
 func (m *Messenger) SetLogHandler(handler CustomLogHandler) {
+	m.handlerMutex.Lock()
 	m.logHandlers = []CustomLogHandler{handler}
+	m.handlerMutex.Unlock()
 }
 
 // SubInfo will log a subinfo message.
