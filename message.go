@@ -16,7 +16,7 @@ type Message struct {
 
 // NewMessage will return a new Message instance.
 func NewMessage(msgType uint8, msg string) Message {
-	var ts = time.Now().Format(time.RFC3339) + ": "
+	var ts = time.Now().Format(time.RFC3339)
 
 	switch msgType {
 	case TypeErr:
