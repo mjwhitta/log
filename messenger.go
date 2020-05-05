@@ -147,6 +147,21 @@ func (m *Messenger) Errf(format string, args ...interface{}) error {
 	return m.Err(hl.Sprintf(format, args...))
 }
 
+// ErrX will log an error message and exit.
+func (m *Messenger) ErrX(code int, msg string) {
+	m.doLog(NewMessage(TypeErrX, msg))
+	os.Exit(code)
+}
+
+// ErrfX will log an error message using a format string and exit.
+func (m *Messenger) ErrfX(
+	code int,
+	format string,
+	args ...interface{},
+) {
+	m.ErrX(code, hl.Sprintf(format, args...))
+}
+
 // Good will log a good message.
 func (m *Messenger) Good(msg string) error {
 	return m.doLog(NewMessage(TypeGood, msg))

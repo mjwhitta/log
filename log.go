@@ -1,6 +1,8 @@
 package log
 
 import (
+	"os"
+
 	hl "gitlab.com/mjwhitta/hilighter"
 )
 
@@ -25,6 +27,17 @@ func Err(msg string) {
 // Errf will log an error message using a format string.
 func Errf(format string, args ...interface{}) {
 	Err(hl.Sprintf(format, args...))
+}
+
+// ErrX will log an error message and exit.
+func ErrX(code int, msg string) {
+	doLog(NewMessage(TypeErrX, msg))
+	os.Exit(code)
+}
+
+// ErrfX will log an error message using a format string and exit.
+func ErrfX(code int, format string, args ...interface{}) {
+	ErrX(code, hl.Sprintf(format, args...))
 }
 
 // Good will log a good message.
