@@ -5,6 +5,7 @@
 A simple, extensible logger package. Maybe you want a logger that logs
 to a file and also logs to a websocket. Maybe you want to log
 everything to a file but only portions of certain messages to STDOUT.
+Maybe you don't want to log to STDOUT at all, but rather to a TUI.
 Using the `CustomLogHandler` functionality of this package, you can do
 anything you want.
 
