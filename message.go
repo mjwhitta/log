@@ -19,7 +19,7 @@ func NewMessage(msgType uint8, msg string) Message {
 	var ts = time.Now().Format(time.RFC3339)
 
 	switch msgType {
-	case TypeErr:
+	case TypeErr, TypeErrX:
 		msg = hl.Red("[!] " + msg)
 	case TypeGood:
 		msg = hl.Green("[+] " + msg)

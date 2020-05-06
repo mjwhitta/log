@@ -26,4 +26,4 @@ const TypeSubInfo uint8 = 5
 const TypeWarn uint8 = 6
 
 // Version is the package version.
-const Version = "1.3.3"
+const Version = "1.3.4"
