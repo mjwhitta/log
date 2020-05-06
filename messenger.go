@@ -115,6 +115,16 @@ func (m *Messenger) Close() error {
 	return nil
 }
 
+// Debug will log a debug message.
+func (m *Messenger) Debug(msg string) error {
+	return m.doLog(NewMessage(TypeDebug, msg))
+}
+
+// Debugf will log a debug message using a format string.
+func (m *Messenger) Debugf(format string, args ...interface{}) error {
+	return m.Debug(hl.Sprintf(format, args...))
+}
+
 func (m *Messenger) doLog(msg Message) error {
 	var e error
 

@@ -6,17 +6,22 @@ import (
 	hl "gitlab.com/mjwhitta/hilighter"
 )
 
+// Debug will log a debug message.
+func Debug(msg string) {
+	doLog(NewMessage(TypeDebug, msg))
+}
+
+// Debugf will log a debug message using a format string.
+func Debugf(format string, args ...interface{}) {
+	Debug(hl.Sprintf(format, args...))
+}
+
 func doLog(msg Message) {
 	if Timestamp {
 		hl.Println(msg.TimeText)
 	} else {
 		hl.Println(msg.Text)
 	}
-}
-
-// SetColor will disable/enable colors for stdout.
-func SetColor(enabled bool) {
-	hl.Disable(!enabled)
 }
 
 // Err will log an error message.
@@ -68,6 +73,11 @@ func Msg(msg string) {
 // Msgf will log a message as is using a format string.
 func Msgf(format string, args ...interface{}) {
 	Msg(hl.Sprintf(format, args...))
+}
+
+// SetColor will disable/enable colors for stdout.
+func SetColor(enabled bool) {
+	hl.Disable(!enabled)
 }
 
 // SubInfo will log a subinfo message.

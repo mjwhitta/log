@@ -33,12 +33,14 @@ func main() {
     var e error
 
     // Default log functionality (stdout w/o timestamp)
+    log.Debug("Debug message")
     log.Info("Info message")
     log.Good("Good message")
     log.Err("Error message")
 
     // Default log functionality + timestamp
     log.Timestamp = true
+    log.Debug("Debug message")
     log.Info("Info message")
     log.Good("Good message")
     log.Err("Error message")
@@ -73,6 +75,8 @@ func main() {
     logger.SetLogHandler(
         func(msg log.Message) error {
             switch msg.Type {
+            case log.TypeDebug:
+                hl.Println("Custom 1 - debug")
             case log.TypeErr, log.TypeErrX:
                 hl.Println("Custom 1 - error")
             case log.TypeGood:
@@ -95,6 +99,7 @@ func main() {
             return nil
         },
     )
+    logger.Debug("Debug message")
     logger.Info("Info message")
     logger.Good("Good message")
     logger.Err("Error message")
