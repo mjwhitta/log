@@ -73,7 +73,7 @@ func main() {
     logger.SetLogHandler(
         func(msg log.Message) error {
             switch msg.Type {
-            case log.TypeErr:
+            case log.TypeErr, log.TypeErrX:
                 hl.Println("Custom 1 - error")
             case log.TypeGood:
                 hl.Println("Custom 1 - good")
