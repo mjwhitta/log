@@ -71,9 +71,9 @@ func main() {
     logger.Good("Good message")
     logger.Err("Error message")
 
-    // CustomLogHandler
-    logger.SetLogHandler(
-        func(msg log.Message) error {
+    // Custom MsgHandler
+    logger.SetMsgHandler(
+        func(msg *log.Message) error {
             switch msg.Type {
             case log.TypeDebug:
                 hl.Println("Custom 1 - debug")
@@ -93,8 +93,8 @@ func main() {
             return nil
         },
     )
-    logger.AddLogHandler(
-        func(msg log.Message) error {
+    logger.AddMsgHandler(
+        func(msg *log.Message) error {
             hl.Println("Custom 2")
             return nil
         },

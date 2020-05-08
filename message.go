@@ -8,44 +8,71 @@ import (
 
 // Message is struct containing all message related data.
 type Message struct {
-	Raw       string
-	Text      string
-	Timestamp string
-	TimeText  string
-	Type      uint8
+	Discard      bool
+	preprocessed string
+	Raw          string
+	text         string
+	timestamp    string
+	Type         uint8
 }
 
 // NewMessage will return a new Message instance.
-func NewMessage(msgType uint8, msg string) Message {
-	var formatted string
+func NewMessage(msgType uint8, msg string) (m *Message) {
 	var ts = time.Now().Format(time.RFC3339)
 
-	switch msgType {
-	case TypeDebug:
-		formatted = hl.Magenta("[#] " + msg)
-	case TypeErr, TypeErrX:
-		formatted = hl.Red("[!] " + msg)
-	case TypeGood:
-		formatted = hl.Green("[+] " + msg)
-	case TypeInfo:
-		formatted = hl.White("[*] " + msg)
-	case TypeSubInfo:
-		formatted = hl.Cyan("[=] " + msg)
-	case TypeWarn:
-		formatted = hl.Yellow("[-] " + msg)
-	default:
-		formatted = msg
+	m = &Message{
+		preprocessed: msg,
+		Raw:          msg,
+		timestamp:    ts,
+		Type:         msgType,
 	}
+	m.build()
 
-	return Message{
-		Raw:       msg,
-		Text:      formatted,
-		Timestamp: ts,
-		TimeText:  ts + ": " + formatted,
-		Type:      msgType,
+	return
+}
+
+func (m *Message) build() {
+	switch m.Type {
+	case TypeDebug:
+		m.text = hl.Magenta("[#] " + m.Raw)
+	case TypeErr, TypeErrX:
+		m.text = hl.Red("[!] " + m.Raw)
+	case TypeGood:
+		m.text = hl.Green("[+] " + m.Raw)
+	case TypeInfo:
+		m.text = hl.White("[*] " + m.Raw)
+	case TypeSubInfo:
+		m.text = hl.Cyan("[=] " + m.Raw)
+	case TypeWarn:
+		m.text = hl.Yellow("[-] " + m.Raw)
+	default:
+		m.text = m.Raw
 	}
 }
 
-func (m Message) String() string {
-	return m.TimeText
+// Preprocessed will return the preprocessed message text.
+func (m *Message) Preprocessed() string {
+	return m.preprocessed
+}
+
+// RawString will return the raw string representation of the Message
+// instance.
+func (m *Message) RawString() string {
+	return m.timestamp + ": " + m.Raw
+}
+
+// String will return the string representation of the Message
+// instance.
+func (m *Message) String() string {
+	return m.timestamp + ": " + m.text
+}
+
+// Text will return the processed message text (w/ no timestamp)
+func (m *Message) Text() string {
+	return m.text
+}
+
+// Timestamp will return the timestamp of the message.
+func (m *Message) Timestamp() string {
+	return m.timestamp
 }

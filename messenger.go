@@ -7,22 +7,32 @@ import (
 	hl "gitlab.com/mjwhitta/hilighter"
 )
 
-// CustomCloseHandler is a function pointer.
-type CustomCloseHandler func() error
+// CloseHandler is a function pointer. CloseHandlers are called when
+// the Messengers is closed and allow for closing of files or sockets.
+type CloseHandler func() error
 
-// CustomLogHandler is a function pointer.
-type CustomLogHandler func(msg Message) error
+// MsgHandler is a function pointer. MsgHandlers are called when a
+// message is logged and allow for custom actions like writing to a
+// file or a socket.
+type MsgHandler func(msg *Message) error
 
 // Messenger will log to STDOUT as well as call a custom log handlers
 // defined by the user. If Timestamp is true, then messages are
 // prepended with an RFC3339 timestamp.
 type Messenger struct {
-	closeHandlers []CustomCloseHandler
+	closeHandlers []CloseHandler
 	handlerMutex  sync.RWMutex
-	logHandlers   []CustomLogHandler
+	logHandlers   []MsgHandler
+	preprocessor  Preprocessor
 	Stdout        bool
 	Timestamp     bool
 }
+
+// Preprocessor is a function pointer. The Preprocessor is called
+// before the message is logged and allows for reformatting of
+// messages such as JSON. Set the Discard field to true to drop
+// messages.
+type Preprocessor func(msg *Message)
 
 // NewFileMessenger will return a new Messenger instance for logging
 // to a file. The log file will always show the timestamp, but STDOUT
@@ -58,14 +68,14 @@ func NewFileMessenger(fn string, ts ...bool) (*Messenger, error) {
 		},
 	)
 
-	m.SetLogHandler(
-		func(msg Message) error {
+	m.SetMsgHandler(
+		func(msg *Message) error {
 			var e error
 
 			mutex.Lock()
 
 			if file != nil {
-				_, e = file.WriteString(hl.Plain(msg.TimeText) + "\n")
+				_, e = file.WriteString(msg.RawString() + "\n")
 			}
 
 			mutex.Unlock()
@@ -88,15 +98,15 @@ func NewMessenger(ts ...bool) *Messenger {
 
 // AddCloseHandler will add a handler for custom actions when the
 // Messenger instance is closed.
-func (m *Messenger) AddCloseHandler(handler CustomCloseHandler) {
+func (m *Messenger) AddCloseHandler(handler CloseHandler) {
 	m.handlerMutex.Lock()
 	m.closeHandlers = append(m.closeHandlers, handler)
 	m.handlerMutex.Unlock()
 }
 
-// AddLogHandler will add a handler for custom actions when the
+// AddMsgHandler will add a handler for custom actions when the
 // Messenger logs a message.
-func (m *Messenger) AddLogHandler(handler CustomLogHandler) {
+func (m *Messenger) AddMsgHandler(handler MsgHandler) {
 	m.handlerMutex.Lock()
 	m.logHandlers = append(m.logHandlers, handler)
 	m.handlerMutex.Unlock()
@@ -125,14 +135,26 @@ func (m *Messenger) Debugf(format string, args ...interface{}) error {
 	return m.Debug(hl.Sprintf(format, args...))
 }
 
-func (m *Messenger) doLog(msg Message) error {
+func (m *Messenger) doLog(msg *Message) error {
 	var e error
+
+	if m.preprocessor != nil {
+		m.handlerMutex.RLock()
+		m.preprocessor(msg)
+		m.handlerMutex.RUnlock()
+
+		if msg.Discard {
+			return nil
+		}
+
+		msg.build()
+	}
 
 	if m.Stdout {
 		if m.Timestamp {
-			hl.Println(msg.TimeText)
+			hl.Println(msg.String())
 		} else {
-			hl.Println(msg.Text)
+			hl.Println(msg.Text())
 		}
 	}
 
@@ -204,9 +226,9 @@ func (m *Messenger) Msgf(format string, args ...interface{}) error {
 
 // SetCloseHandler will set the handler for custom actions when the
 // Messenger instance is closed.
-func (m *Messenger) SetCloseHandler(handler CustomCloseHandler) {
+func (m *Messenger) SetCloseHandler(handler CloseHandler) {
 	m.handlerMutex.Lock()
-	m.closeHandlers = []CustomCloseHandler{handler}
+	m.closeHandlers = []CloseHandler{handler}
 	m.handlerMutex.Unlock()
 }
 
@@ -215,11 +237,19 @@ func (m *Messenger) SetColor(enabled bool) {
 	hl.Disable(!enabled)
 }
 
-// SetLogHandler will set the handler for custom actions when the
+// SetMsgHandler will set the handler for custom actions when the
 // Messenger logs a message.
-func (m *Messenger) SetLogHandler(handler CustomLogHandler) {
+func (m *Messenger) SetMsgHandler(handler MsgHandler) {
 	m.handlerMutex.Lock()
-	m.logHandlers = []CustomLogHandler{handler}
+	m.logHandlers = []MsgHandler{handler}
+	m.handlerMutex.Unlock()
+}
+
+// SetPreprocessor will set the handler for preprocessing messages
+// when the Messenger logs a message.
+func (m *Messenger) SetPreprocessor(handler Preprocessor) {
+	m.handlerMutex.Lock()
+	m.preprocessor = handler
 	m.handlerMutex.Unlock()
 }
 

@@ -29,4 +29,4 @@ const TypeSubInfo uint8 = TypeMsg + 1
 const TypeWarn uint8 = TypeSubInfo + 1
 
 // Version is the package version.
-const Version = "1.3.6"
+const Version = "1.4.0"

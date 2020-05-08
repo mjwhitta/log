@@ -16,11 +16,11 @@ func Debugf(format string, args ...interface{}) {
 	Debug(hl.Sprintf(format, args...))
 }
 
-func doLog(msg Message) {
+func doLog(msg *Message) {
 	if Timestamp {
-		hl.Println(msg.TimeText)
+		hl.Println(msg.String())
 	} else {
-		hl.Println(msg.Text)
+		hl.Println(msg.Text())
 	}
 }
 
