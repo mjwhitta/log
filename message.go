@@ -8,44 +8,56 @@ import (
 
 // Message is struct containing all message related data.
 type Message struct {
-	Raw       string
-	Text      string
-	Timestamp string
-	TimeText  string
-	Type      uint8
+	Preprocessed string
+	Raw          string
+	Text         string
+	Timestamp    string
+	Type         uint8
 }
 
 // NewMessage will return a new Message instance.
-func NewMessage(msgType uint8, msg string) Message {
-	var formatted string
+func NewMessage(msgType uint8, msg string) (m Message) {
 	var ts = time.Now().Format(time.RFC3339)
 
-	switch msgType {
-	case TypeDebug:
-		formatted = hl.Magenta("[#] " + msg)
-	case TypeErr, TypeErrX:
-		formatted = hl.Red("[!] " + msg)
-	case TypeGood:
-		formatted = hl.Green("[+] " + msg)
-	case TypeInfo:
-		formatted = hl.White("[*] " + msg)
-	case TypeSubInfo:
-		formatted = hl.Cyan("[=] " + msg)
-	case TypeWarn:
-		formatted = hl.Yellow("[-] " + msg)
-	default:
-		formatted = msg
+	m = Message{
+		Preprocessed: msg,
+		Timestamp:    ts,
+		Type:         msgType,
 	}
+	m.build(msg)
 
-	return Message{
-		Raw:       msg,
-		Text:      formatted,
-		Timestamp: ts,
-		TimeText:  ts + ": " + formatted,
-		Type:      msgType,
+	return
+}
+
+func (m Message) build(raw string) {
+	m.Raw = raw
+
+	switch m.Type {
+	case TypeDebug:
+		m.Text = hl.Magenta("[#] " + m.Raw)
+	case TypeErr, TypeErrX:
+		m.Text = hl.Red("[!] " + m.Raw)
+	case TypeGood:
+		m.Text = hl.Green("[+] " + m.Raw)
+	case TypeInfo:
+		m.Text = hl.White("[*] " + m.Raw)
+	case TypeSubInfo:
+		m.Text = hl.Cyan("[=] " + m.Raw)
+	case TypeWarn:
+		m.Text = hl.Yellow("[-] " + m.Raw)
+	default:
+		m.Text = m.Raw
 	}
 }
 
+// RawString will return the raw string representation of the Message
+// instance.
+func (m Message) RawString() string {
+	return m.Timestamp + ": " + m.Raw
+}
+
+// String will return the string representation of the Message
+// instance.
 func (m Message) String() string {
-	return m.TimeText
+	return m.Timestamp + ": " + m.Text
 }

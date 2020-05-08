@@ -18,7 +18,7 @@ func Debugf(format string, args ...interface{}) {
 
 func doLog(msg Message) {
 	if Timestamp {
-		hl.Println(msg.TimeText)
+		hl.Println(msg.String())
 	} else {
 		hl.Println(msg.Text)
 	}
