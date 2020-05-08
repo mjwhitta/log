@@ -14,7 +14,7 @@ type CloseHandler func() error
 // MessageHandler is a function pointer. MessageHandlers are called
 // when a message is logged and allow for custom actions like writing
 // to a file or a socket.
-type MessageHandler func(msg Message) error
+type MessageHandler func(msg *Message) error
 
 // Messenger will log to STDOUT as well as call a custom log handlers
 // defined by the user. If Timestamp is true, then messages are
@@ -31,7 +31,7 @@ type Messenger struct {
 // Preprocessor is a function pointer. The Preprocessor is called
 // before the message is logged in any way all allows for reformatting
 // of messages such as JSON.
-type Preprocessor func(msg Message) Message
+type Preprocessor func(msg *Message)
 
 // NewFileMessenger will return a new Messenger instance for logging
 // to a file. The log file will always show the timestamp, but STDOUT
@@ -68,7 +68,7 @@ func NewFileMessenger(fn string, ts ...bool) (*Messenger, error) {
 	)
 
 	m.SetMessageHandler(
-		func(msg Message) error {
+		func(msg *Message) error {
 			var e error
 
 			mutex.Lock()
@@ -134,12 +134,12 @@ func (m *Messenger) Debugf(format string, args ...interface{}) error {
 	return m.Debug(hl.Sprintf(format, args...))
 }
 
-func (m *Messenger) doLog(msg Message) error {
+func (m *Messenger) doLog(msg *Message) error {
 	var e error
 
 	if m.preprocessor != nil {
 		m.handlerMutex.RLock()
-		msg = m.preprocessor(msg)
+		m.preprocessor(msg)
 		m.handlerMutex.RUnlock()
 		msg.build()
 	}
