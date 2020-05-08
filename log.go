@@ -20,7 +20,7 @@ func doLog(msg Message) {
 	if Timestamp {
 		hl.Println(msg.String())
 	} else {
-		hl.Println(msg.Text)
+		hl.Println(msg.Text())
 	}
 }
 

@@ -148,7 +148,7 @@ func (m *Messenger) doLog(msg Message) error {
 		if m.Timestamp {
 			hl.Println(msg.String())
 		} else {
-			hl.Println(msg.Text)
+			hl.Println(msg.Text())
 		}
 	}
 
