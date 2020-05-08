@@ -29,9 +29,9 @@ type Messenger struct {
 }
 
 // Preprocessor is a function pointer. The Preprocessor is called
-// before the message is logged in any way all allows for reformatted
-// messages such as JSON.
-type Preprocessor func(msg Message) string
+// before the message is logged in any way all allows for reformatting
+// of messages such as JSON.
+type Preprocessor func(msg Message) Message
 
 // NewFileMessenger will return a new Messenger instance for logging
 // to a file. The log file will always show the timestamp, but STDOUT
@@ -139,8 +139,9 @@ func (m *Messenger) doLog(msg Message) error {
 
 	if m.preprocessor != nil {
 		m.handlerMutex.RLock()
-		msg.build(m.preprocessor(msg))
+		msg = m.preprocessor(msg)
 		m.handlerMutex.RUnlock()
+		msg.build()
 	}
 
 	if m.Stdout {
