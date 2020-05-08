@@ -29,8 +29,8 @@ type Messenger struct {
 }
 
 // Preprocessor is a function pointer. The Preprocessor is called
-// before the message is logged in any way all allows for reformatting
-// of messages such as JSON.
+// before the message is logged and allows for reformatting
+// of messages such as JSON. Set the message to nil to drop messages.
 type Preprocessor func(msg *Message)
 
 // NewFileMessenger will return a new Messenger instance for logging
@@ -141,6 +141,11 @@ func (m *Messenger) doLog(msg *Message) error {
 		m.handlerMutex.RLock()
 		m.preprocessor(msg)
 		m.handlerMutex.RUnlock()
+
+		if msg == nil {
+			return nil
+		}
+
 		msg.build()
 	}
 
