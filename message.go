@@ -8,6 +8,7 @@ import (
 
 // Message is struct containing all message related data.
 type Message struct {
+	Discard      bool
 	preprocessed string
 	Raw          string
 	text         string
