@@ -8,6 +8,7 @@ import (
 
 // Message is struct containing all message related data.
 type Message struct {
+	Raw       string
 	Text      string
 	Timestamp string
 	TimeText  string
@@ -16,27 +17,35 @@ type Message struct {
 
 // NewMessage will return a new Message instance.
 func NewMessage(msgType uint8, msg string) Message {
+	var formatted string
 	var ts = time.Now().Format(time.RFC3339)
 
 	switch msgType {
 	case TypeDebug:
-		msg = hl.Magenta("[#] " + msg)
+		formatted = hl.Magenta("[#] " + msg)
 	case TypeErr, TypeErrX:
-		msg = hl.Red("[!] " + msg)
+		formatted = hl.Red("[!] " + msg)
 	case TypeGood:
-		msg = hl.Green("[+] " + msg)
+		formatted = hl.Green("[+] " + msg)
 	case TypeInfo:
-		msg = hl.White("[*] " + msg)
+		formatted = hl.White("[*] " + msg)
 	case TypeSubInfo:
-		msg = hl.Cyan("[=] " + msg)
+		formatted = hl.Cyan("[=] " + msg)
 	case TypeWarn:
-		msg = hl.Yellow("[-] " + msg)
+		formatted = hl.Yellow("[-] " + msg)
+	default:
+		formatted = msg
 	}
 
 	return Message{
-		Text:      msg,
+		Raw:       msg,
+		Text:      formatted,
 		Timestamp: ts,
-		TimeText:  ts + ": " + msg,
+		TimeText:  ts + ": " + formatted,
 		Type:      msgType,
 	}
+}
+
+func (m Message) String() string {
+	return m.TimeText
 }
