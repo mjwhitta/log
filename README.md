@@ -1,5 +1,7 @@
 # log
 
+[![Go Report Card](https://goreportcard.com/badge/gitlab.com/mjwhitta/log)](https://goreportcard.com/report/gitlab.com/mjwhitta/log)
+
 ## What is this?
 
 A simple, extensible logger package. Maybe you want a logger that logs

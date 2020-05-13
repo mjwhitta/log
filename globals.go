@@ -4,29 +4,31 @@ package log
 // stdout with the message.
 var Timestamp bool
 
-// TypeDebug is a debug message.
-const TypeDebug uint8 = 0
+const (
+	// TypeDebug is a debug message.
+	TypeDebug = iota
 
-// TypeErr is an error message.
-const TypeErr uint8 = TypeDebug + 1
+	// TypeErr is an error message.
+	TypeErr
 
-// TypeErrX is an error message that will exit after.
-const TypeErrX uint8 = TypeErr + 1
+	// TypeErrX is an error message that will exit after.
+	TypeErrX
 
-// TypeGood is a success message.
-const TypeGood uint8 = TypeErrX + 1
+	// TypeGood is a success message.
+	TypeGood
 
-// TypeInfo is an informative message.
-const TypeInfo uint8 = TypeGood + 1
+	// TypeInfo is an informative message.
+	TypeInfo
 
-// TypeMsg is a generic/plain message.
-const TypeMsg uint8 = TypeInfo + 1
+	// TypeMsg is a generic/plain message.
+	TypeMsg
 
-// TypeSubInfo is an additional info message.
-const TypeSubInfo uint8 = TypeMsg + 1
+	// TypeSubInfo is an additional info message.
+	TypeSubInfo
 
-// TypeWarn is a warning message.
-const TypeWarn uint8 = TypeSubInfo + 1
+	// TypeWarn is a warning message.
+	TypeWarn
+)
 
 // Version is the package version.
-const Version = "1.4.1"
+const Version = "1.4.2"
