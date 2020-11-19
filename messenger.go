@@ -43,7 +43,7 @@ func NewFileMessenger(fn string, ts ...bool) (*Messenger, error) {
 	var m *Messenger = NewMessenger(ts...)
 	var mutex = sync.Mutex{}
 
-	if len(fn) == 0 {
+	if fn == "" {
 		return nil, hl.Errorf("No filename provided")
 	}
 
