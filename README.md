@@ -18,7 +18,7 @@ anything you want.
 Open a terminal and run the following:
 
 ```
-$ go get -u gitlab.com/mjwhitta/log
+$ go get --ldflags="-s -w" --trimpath -u gitlab.com/mjwhitta/log
 ```
 
 ## Usage
