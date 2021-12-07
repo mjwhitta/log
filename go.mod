@@ -2,4 +2,4 @@ module gitlab.com/mjwhitta/log
 
 go 1.17
 
-require gitlab.com/mjwhitta/hilighter v1.9.3
+require gitlab.com/mjwhitta/hilighter v1.10.0

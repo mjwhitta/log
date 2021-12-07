@@ -44,7 +44,7 @@ func NewFileMessenger(fn string, ts ...bool) (*Messenger, error) {
 	var mutex = sync.Mutex{}
 
 	if fn == "" {
-		return nil, hl.Errorf("no filename provided")
+        return nil, hl.Errorf("log: no filename provided")
 	}
 
 	if file, e = os.Create(fn); e != nil {
