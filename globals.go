@@ -4,31 +4,17 @@ package log
 // stdout with the message.
 var Timestamp bool
 
+// Consts for log message types
 const (
-	// TypeDebug is a debug message.
-	TypeDebug = iota
-
-	// TypeErr is an error message.
-	TypeErr
-
-	// TypeErrX is an error message that will exit after.
-	TypeErrX
-
-	// TypeGood is a success message.
-	TypeGood
-
-	// TypeInfo is an informative message.
-	TypeInfo
-
-	// TypeMsg is a generic/plain message.
-	TypeMsg
-
-	// TypeSubInfo is an additional info message.
-	TypeSubInfo
-
-	// TypeWarn is a warning message.
-	TypeWarn
+	TypeDebug   = iota // TypeDebug is a debug message
+	TypeErr            // TypeErr is an error message
+	TypeErrX           // TypeErrX is an error message that will exit
+	TypeGood           // TypeGood is a success message
+	TypeInfo           // TypeInfo is an informative message
+	TypeMsg            // TypeMsg is a generic/plain message
+	TypeSubInfo        // TypeSubInfo is an additional info message
+	TypeWarn           // TypeWarn is a warning message
 )
 
 // Version is the package version.
-const Version = "1.5.1"
+const Version = "1.6.0"

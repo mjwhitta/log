@@ -4,6 +4,7 @@ import (
 	"os"
 	"sync"
 
+	"gitlab.com/mjwhitta/errors"
 	hl "gitlab.com/mjwhitta/hilighter"
 )
 
@@ -39,16 +40,16 @@ type Preprocessor func(msg *Message)
 // will only show the timestamp if Timestamp is true.
 func NewFileMessenger(fn string, ts ...bool) (*Messenger, error) {
 	var e error
-	var file *os.File
+	var f *os.File
 	var m *Messenger = NewMessenger(ts...)
 	var mutex = sync.Mutex{}
 
 	if fn == "" {
-		return nil, hl.Errorf("log: no filename provided")
+		return nil, errors.New("no filename provided")
 	}
 
-	if file, e = os.Create(fn); e != nil {
-		return nil, e
+	if f, e = os.Create(fn); e != nil {
+		return nil, errors.Newf("failed to create %s: %w", fn, e)
 	}
 
 	m.SetCloseHandler(
@@ -56,13 +57,12 @@ func NewFileMessenger(fn string, ts ...bool) (*Messenger, error) {
 			var e error
 
 			mutex.Lock()
+			defer mutex.Unlock()
 
-			if file != nil {
-				e = file.Close()
-				file = nil
+			if f != nil {
+				e = f.Close()
+				f = nil
 			}
-
-			mutex.Unlock()
 
 			return e
 		},
@@ -73,12 +73,11 @@ func NewFileMessenger(fn string, ts ...bool) (*Messenger, error) {
 			var e error
 
 			mutex.Lock()
+			defer mutex.Unlock()
 
-			if file != nil {
-				_, e = file.WriteString(msg.RawString() + "\n")
+			if f != nil {
+				_, e = f.WriteString(msg.RawString() + "\n")
 			}
-
-			mutex.Unlock()
 
 			return e
 		},
@@ -100,25 +99,25 @@ func NewMessenger(ts ...bool) *Messenger {
 // Messenger instance is closed.
 func (m *Messenger) AddCloseHandler(handler CloseHandler) {
 	m.handlerMutex.Lock()
+	defer m.handlerMutex.Unlock()
+
 	m.closeHandlers = append(m.closeHandlers, handler)
-	m.handlerMutex.Unlock()
 }
 
 // AddMsgHandler will add a handler for custom actions when the
 // Messenger logs a message.
 func (m *Messenger) AddMsgHandler(handler MsgHandler) {
 	m.handlerMutex.Lock()
+	defer m.handlerMutex.Unlock()
+
 	m.logHandlers = append(m.logHandlers, handler)
-	m.handlerMutex.Unlock()
 }
 
 // Close will call the close handler.
 func (m *Messenger) Close() error {
-	var e error
-
 	for _, f := range m.closeHandlers {
-		if e = f(); e != nil {
-			return e
+		if e := f(); e != nil {
+			return errors.Newf("CloseHandler returned error: %w", e)
 		}
 	}
 
@@ -159,12 +158,13 @@ func (m *Messenger) doLog(msg *Message) error {
 	}
 
 	m.handlerMutex.RLock()
+	defer m.handlerMutex.RUnlock()
+
 	for _, f := range m.logHandlers {
 		if e = f(msg); e != nil {
-			return e
+			return errors.Newf("MsgHandler returned error: %w", e)
 		}
 	}
-	m.handlerMutex.RUnlock()
 
 	return nil
 }
@@ -228,8 +228,9 @@ func (m *Messenger) Msgf(format string, args ...interface{}) error {
 // Messenger instance is closed.
 func (m *Messenger) SetCloseHandler(handler CloseHandler) {
 	m.handlerMutex.Lock()
+	defer m.handlerMutex.Unlock()
+
 	m.closeHandlers = []CloseHandler{handler}
-	m.handlerMutex.Unlock()
 }
 
 // SetColor will disable/enable colors for STDOUT.
@@ -241,16 +242,18 @@ func (m *Messenger) SetColor(enabled bool) {
 // Messenger logs a message.
 func (m *Messenger) SetMsgHandler(handler MsgHandler) {
 	m.handlerMutex.Lock()
+	defer m.handlerMutex.Unlock()
+
 	m.logHandlers = []MsgHandler{handler}
-	m.handlerMutex.Unlock()
 }
 
 // SetPreprocessor will set the handler for preprocessing messages
 // when the Messenger logs a message.
 func (m *Messenger) SetPreprocessor(handler Preprocessor) {
 	m.handlerMutex.Lock()
+	defer m.handlerMutex.Unlock()
+
 	m.preprocessor = handler
-	m.handlerMutex.Unlock()
 }
 
 // SubInfo will log a subinfo message.
