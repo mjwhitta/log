@@ -3,7 +3,7 @@ package log
 import (
 	"time"
 
-	hl "gitlab.com/mjwhitta/hilighter"
+	hl "github.com/mjwhitta/hilighter"
 )
 
 // Message is struct containing all message related data.

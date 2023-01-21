@@ -2,7 +2,7 @@
 
 <a href="https://www.buymeacoffee.com/mjwhitta">🍪 Buy me a cookie</a>
 
-[![Go Report Card](https://goreportcard.com/badge/gitlab.com/mjwhitta/log)](https://goreportcard.com/report/gitlab.com/mjwhitta/log)
+[![Go Report Card](https://goreportcard.com/badge/github.com/mjwhitta/log)](https://goreportcard.com/report/github.com/mjwhitta/log)
 
 ## What is this?
 
@@ -18,7 +18,7 @@ anything you want.
 Open a terminal and run the following:
 
 ```
-$ go get --ldflags="-s -w" --trimpath -u gitlab.com/mjwhitta/log
+$ go get --ldflags="-s -w" --trimpath -u github.com/mjwhitta/log
 ```
 
 ## Usage
@@ -27,8 +27,8 @@ $ go get --ldflags="-s -w" --trimpath -u gitlab.com/mjwhitta/log
 package main
 
 import (
-    hl "gitlab.com/mjwhitta/hilighter"
-    "gitlab.com/mjwhitta/log"
+    hl "github.com/mjwhitta/hilighter"
+    "github.com/mjwhitta/log"
 )
 
 var logger *log.Messenger
@@ -123,4 +123,4 @@ func main() {
 
 ## Links
 
-- [Source](https://gitlab.com/mjwhitta/log)
+- [Source](https://github.com/mjwhitta/log)

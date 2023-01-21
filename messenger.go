@@ -4,8 +4,8 @@ import (
 	"os"
 	"sync"
 
-	"gitlab.com/mjwhitta/errors"
-	hl "gitlab.com/mjwhitta/hilighter"
+	"github.com/mjwhitta/errors"
+	hl "github.com/mjwhitta/hilighter"
 )
 
 // CloseHandler is a function pointer. CloseHandlers are called when

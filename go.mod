@@ -1,8 +1,8 @@
-module gitlab.com/mjwhitta/log
+module github.com/mjwhitta/log
 
-go 1.17
+go 1.19
 
 require (
-	gitlab.com/mjwhitta/errors v1.0.0
-	gitlab.com/mjwhitta/hilighter v1.11.1
+	github.com/mjwhitta/errors v1.0.1
+	github.com/mjwhitta/hilighter v1.11.2
 )

@@ -3,7 +3,7 @@ package log
 import (
 	"os"
 
-	hl "gitlab.com/mjwhitta/hilighter"
+	hl "github.com/mjwhitta/hilighter"
 )
 
 // Debug will log a debug message.
