@@ -130,7 +130,7 @@ func (m *Messenger) Debug(msg string) error {
 }
 
 // Debugf will log a debug message using a format string.
-func (m *Messenger) Debugf(format string, args ...interface{}) error {
+func (m *Messenger) Debugf(format string, args ...any) error {
 	return m.Debug(hl.Sprintf(format, args...))
 }
 
@@ -175,7 +175,7 @@ func (m *Messenger) Err(msg string) error {
 }
 
 // Errf will log an error message using a format string.
-func (m *Messenger) Errf(format string, args ...interface{}) error {
+func (m *Messenger) Errf(format string, args ...any) error {
 	return m.Err(hl.Sprintf(format, args...))
 }
 
@@ -186,11 +186,7 @@ func (m *Messenger) ErrX(code int, msg string) {
 }
 
 // ErrfX will log an error message using a format string and exit.
-func (m *Messenger) ErrfX(
-	code int,
-	format string,
-	args ...interface{},
-) {
+func (m *Messenger) ErrfX(code int, format string, args ...any) {
 	m.ErrX(code, hl.Sprintf(format, args...))
 }
 
@@ -200,7 +196,7 @@ func (m *Messenger) Good(msg string) error {
 }
 
 // Goodf will log a good message using a format string.
-func (m *Messenger) Goodf(format string, args ...interface{}) error {
+func (m *Messenger) Goodf(format string, args ...any) error {
 	return m.Good(hl.Sprintf(format, args...))
 }
 
@@ -210,7 +206,7 @@ func (m *Messenger) Info(msg string) error {
 }
 
 // Infof will log an info message using a format string.
-func (m *Messenger) Infof(format string, args ...interface{}) error {
+func (m *Messenger) Infof(format string, args ...any) error {
 	return m.Info(hl.Sprintf(format, args...))
 }
 
@@ -220,7 +216,7 @@ func (m *Messenger) Msg(msg string) error {
 }
 
 // Msgf will log a message as is using a format string.
-func (m *Messenger) Msgf(format string, args ...interface{}) error {
+func (m *Messenger) Msgf(format string, args ...any) error {
 	return m.Msg(hl.Sprintf(format, args...))
 }
 
@@ -262,10 +258,7 @@ func (m *Messenger) SubInfo(msg string) error {
 }
 
 // SubInfof will log a subinfo message using a format string.
-func (m *Messenger) SubInfof(
-	format string,
-	args ...interface{},
-) error {
+func (m *Messenger) SubInfof(format string, args ...any) error {
 	return m.SubInfo(hl.Sprintf(format, args...))
 }
 
@@ -275,6 +268,6 @@ func (m *Messenger) Warn(msg string) error {
 }
 
 // Warnf will log a warn message using a format string.
-func (m *Messenger) Warnf(format string, args ...interface{}) error {
+func (m *Messenger) Warnf(format string, args ...any) error {
 	return m.Warn(hl.Sprintf(format, args...))
 }

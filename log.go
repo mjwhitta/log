@@ -12,7 +12,7 @@ func Debug(msg string) {
 }
 
 // Debugf will log a debug message using a format string.
-func Debugf(format string, args ...interface{}) {
+func Debugf(format string, args ...any) {
 	Debug(hl.Sprintf(format, args...))
 }
 
@@ -30,7 +30,7 @@ func Err(msg string) {
 }
 
 // Errf will log an error message using a format string.
-func Errf(format string, args ...interface{}) {
+func Errf(format string, args ...any) {
 	Err(hl.Sprintf(format, args...))
 }
 
@@ -41,7 +41,7 @@ func ErrX(code int, msg string) {
 }
 
 // ErrfX will log an error message using a format string and exit.
-func ErrfX(code int, format string, args ...interface{}) {
+func ErrfX(code int, format string, args ...any) {
 	ErrX(code, hl.Sprintf(format, args...))
 }
 
@@ -51,7 +51,7 @@ func Good(msg string) {
 }
 
 // Goodf will log a good message using a format string.
-func Goodf(format string, args ...interface{}) {
+func Goodf(format string, args ...any) {
 	Good(hl.Sprintf(format, args...))
 }
 
@@ -61,7 +61,7 @@ func Info(msg string) {
 }
 
 // Infof will log an info message using a format string.
-func Infof(format string, args ...interface{}) {
+func Infof(format string, args ...any) {
 	Info(hl.Sprintf(format, args...))
 }
 
@@ -71,7 +71,7 @@ func Msg(msg string) {
 }
 
 // Msgf will log a message as is using a format string.
-func Msgf(format string, args ...interface{}) {
+func Msgf(format string, args ...any) {
 	Msg(hl.Sprintf(format, args...))
 }
 
@@ -86,7 +86,7 @@ func SubInfo(msg string) {
 }
 
 // SubInfof will log a subinfo message using a format string.
-func SubInfof(format string, args ...interface{}) {
+func SubInfof(format string, args ...any) {
 	SubInfo(hl.Sprintf(format, args...))
 }
 
@@ -96,6 +96,6 @@ func Warn(msg string) {
 }
 
 // Warnf will log a warn message using a format string.
-func Warnf(format string, args ...interface{}) {
+func Warnf(format string, args ...any) {
 	Warn(hl.Sprintf(format, args...))
 }
