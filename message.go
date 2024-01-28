@@ -18,7 +18,7 @@ type Message struct {
 
 // NewMessage will return a new Message instance.
 func NewMessage(msgType uint8, msg string) (m *Message) {
-	var ts = time.Now().Format(time.RFC3339)
+	var ts string = time.Now().Format(time.RFC3339)
 
 	m = &Message{
 		preprocessed: msg,
@@ -55,14 +55,12 @@ func (m *Message) Preprocessed() string {
 	return m.preprocessed
 }
 
-// RawString will return the raw string representation of the Message
-// instance.
+// RawString will return a raw string representation of the Message.
 func (m *Message) RawString() string {
 	return m.timestamp + ": " + m.Raw
 }
 
-// String will return the string representation of the Message
-// instance.
+// String will return a string representation of the Message.
 func (m *Message) String() string {
 	return m.timestamp + ": " + m.text
 }
