@@ -181,7 +181,10 @@ func (m *Messenger) Errf(format string, args ...any) error {
 
 // ErrX will log an error message and exit.
 func (m *Messenger) ErrX(code int, msg string) {
-	m.doLog(NewMessage(TypeErrX, msg))
+	if e := m.doLog(NewMessage(TypeErrX, msg)); e != nil {
+		ErrX(code, e.Error())
+	}
+
 	os.Exit(code)
 }
 
