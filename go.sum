@@ -1,4 +1,4 @@
-github.com/mjwhitta/errors v1.0.3 h1:0+L8/7ypucj6ufBNt8Rm2qPvJ9qwmS+TtgOJYCYb6Sw=
-github.com/mjwhitta/errors v1.0.3/go.mod h1:VxHM8bLMPVqkvHiYQq4Nq4sjNqPjUtKLhSF2I0wve5U=
-github.com/mjwhitta/hilighter v1.11.10 h1:PjOI00Kr+NY2SpzqQMzOjZcTOJV6uurGibUq8mhRnRo=
-github.com/mjwhitta/hilighter v1.11.10/go.mod h1:/6nqATH7zdFK+CDzYKdSzA0oXR+DGDHBME/Jktc5FoA=
+github.com/mjwhitta/errors v1.0.4 h1:w7cofUxHfJAB1VD8VvcDsnTbrpt89hE5511U2Oak0y0=
+github.com/mjwhitta/errors v1.0.4/go.mod h1:7uD4rO2nxbOcHN0EaV2JhVnxuK/0eVtFZ0mCABjqXlM=
+github.com/mjwhitta/hilighter v1.11.11 h1:ETDnVI1MJM9qpOiXmeaHM73nveYuFf4+e8EPe2+HHLM=
+github.com/mjwhitta/hilighter v1.11.11/go.mod h1:sC4djdlJlIUZi6bOTZUx0OyBMyVdAjscyEIsgbWbQIE=
