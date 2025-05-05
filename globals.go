@@ -17,4 +17,4 @@ const (
 )
 
 // Version is the package version.
-const Version string = "1.6.11"
+const Version string = "1.6.12"
