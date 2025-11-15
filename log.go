@@ -40,8 +40,8 @@ func ErrX(code int, msg string) {
 	os.Exit(code)
 }
 
-// ErrfX will log an error message using a format string and exit.
-func ErrfX(code int, format string, args ...any) {
+// ErrXf will log an error message using a format string and exit.
+func ErrXf(code int, format string, args ...any) {
 	ErrX(code, hl.Sprintf(format, args...))
 }
 

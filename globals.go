@@ -1,10 +1,11 @@
 package log
 
-// Timestamp is used to determine whether a timestamp is printed to
-// stdout with the message.
-var Timestamp bool
+// Version is the package version.
+const Version string = "1.7.0"
 
 // Consts for log message types
+//
+//nolint:grouper // This is an iota block
 const (
 	TypeDebug   = iota // TypeDebug is a debug message
 	TypeErr            // TypeErr is an error message
@@ -16,5 +17,6 @@ const (
 	TypeWarn           // TypeWarn is a warning message
 )
 
-// Version is the package version.
-const Version string = "1.6.12"
+// Timestamp is used to determine whether a timestamp is printed to
+// stdout with the message.
+var Timestamp bool

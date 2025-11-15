@@ -2,6 +2,7 @@ package log
 
 import (
 	"os"
+	"path/filepath"
 	"sync"
 
 	"github.com/mjwhitta/errors"
@@ -48,7 +49,7 @@ func NewFileMessenger(fn string, ts ...bool) (*Messenger, error) {
 		return nil, errors.New("no filename provided")
 	}
 
-	if f, e = os.Create(fn); e != nil {
+	if f, e = os.Create(filepath.Clean(fn)); e != nil {
 		return nil, errors.Newf("failed to create %s: %w", fn, e)
 	}
 
@@ -64,7 +65,11 @@ func NewFileMessenger(fn string, ts ...bool) (*Messenger, error) {
 				f = nil
 			}
 
-			return e
+			if e != nil {
+				return errors.Newf("failed to close file: %w", e)
+			}
+
+			return nil
 		},
 	)
 
@@ -79,7 +84,11 @@ func NewFileMessenger(fn string, ts ...bool) (*Messenger, error) {
 				_, e = f.WriteString(msg.RawString() + "\n")
 			}
 
-			return e
+			if e != nil {
+				return errors.Newf("failed to write msg: %w", e)
+			}
+
+			return nil
 		},
 	)
 
@@ -188,8 +197,8 @@ func (m *Messenger) ErrX(code int, msg string) {
 	os.Exit(code)
 }
 
-// ErrfX will log an error message using a format string and exit.
-func (m *Messenger) ErrfX(code int, format string, args ...any) {
+// ErrXf will log an error message using a format string and exit.
+func (m *Messenger) ErrXf(code int, format string, args ...any) {
 	m.ErrX(code, hl.Sprintf(format, args...))
 }
 
