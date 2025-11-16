@@ -147,6 +147,8 @@ linters:
       max-complexity: 15
     decorder:
       disable-dec-order-check: false
+    errcheck:
+      check-type-assertions: true
     funcorder:
       alphabetical: true
       constructor: false

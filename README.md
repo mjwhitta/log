@@ -28,7 +28,8 @@ $ go get -u github.com/mjwhitta/log
 package main
 
 import (
-    hl "github.com/mjwhitta/hilighter"
+    "fmt"
+
     "github.com/mjwhitta/log"
 )
 
@@ -40,40 +41,63 @@ func main() {
     // Default log functionality (stdout w/o timestamp)
     log.Debug("Debug message")
     log.Info("Info message")
+    log.SubInfo("SubInfo message")
     log.Good("Good message")
+    log.Warn("Warn message")
     log.Err("Error message")
 
     // Default log functionality + timestamp
     log.Timestamp = true
     log.Debug("Debug message")
     log.Info("Info message")
+    log.SubInfo("SubInfo message")
     log.Good("Good message")
+    log.Warn("Warn message")
     log.Err("Error message")
 
     // Will log to stdout (w/o timestamp)
     logger = log.NewMessenger()
+    logger.Debug("Debug message")
     logger.Info("Info message")
+    logger.SubInfo("SubInfo message")
     logger.Good("Good message")
+    logger.Warn("Warn message")
     logger.Err("Error message")
 
     // Will now log to stdout (w/o timestamp) and file (w/ timestamp)
     if logger, e = log.NewFileMessenger("/tmp/test.log"); e != nil {
         panic(e)
     }
+
+    logger.Debug("Debug message")
     logger.Info("Info message")
+    logger.SubInfo("SubInfo message")
     logger.Good("Good message")
+    logger.Warn("Warn message")
     logger.Err("Error message")
 
     // Will now log to stdout (w/ timestamp) and file (w/ timestamp)
+    log.Prefixes[log.TypeDebug] = "[DEBU]"
+    log.Prefixes[log.TypeErr] = "[ERRO]"
+    log.Prefixes[log.TypeGood] = "[GOOD]"
+    log.Prefixes[log.TypeInfo] = "[INFO]"
+    log.Prefixes[log.TypeSubInfo] = "[SUBI]"
+    log.Prefixes[log.TypeWarn] = "[WARN]"
     logger.Timestamp = true
+    logger.Debug("Debug message")
     logger.Info("Info message")
+    logger.SubInfo("SubInfo message")
     logger.Good("Good message")
+    logger.Warn("Warn message")
     logger.Err("Error message")
 
     // Disable color on stdout
     logger.SetColor(false)
+    logger.Debug("Debug message")
     logger.Info("Info message")
+    logger.SubInfo("SubInfo message")
     logger.Good("Good message")
+    logger.Warn("Warn message")
     logger.Err("Error message")
 
     // Custom MsgHandler
@@ -81,38 +105,40 @@ func main() {
         func(msg *log.Message) error {
             switch msg.Type {
             case log.TypeDebug:
-                hl.Println("Custom 1 - debug")
+                fmt.Println("Custom 1 - debug")
             case log.TypeErr, log.TypeErrX:
-                hl.Println("Custom 1 - error")
+                fmt.Println("Custom 1 - error")
             case log.TypeGood:
-                hl.Println("Custom 1 - good")
+                fmt.Println("Custom 1 - good")
             case log.TypeInfo:
-                hl.Println("Custom 1 - info")
+                fmt.Println("Custom 1 - info")
             case log.TypeMsg:
-                hl.Println("Custom 1 - message")
+                fmt.Println("Custom 1 - message")
             case log.TypeSubInfo:
-                hl.Println("Custom 1 - additional info")
+                fmt.Println("Custom 1 - additional info")
             case log.TypeWarn:
-                hl.Println("Custom 1 - warning")
+                fmt.Println("Custom 1 - warning")
             }
             return nil
         },
     )
     logger.AddMsgHandler(
         func(msg *log.Message) error {
-            hl.Println("Custom 2")
+            fmt.Println("Custom 2")
             return nil
         },
     )
     logger.Debug("Debug message")
     logger.Info("Info message")
+    logger.SubInfo("SubInfo message")
     logger.Good("Good message")
+    logger.Warn("Warn message")
     logger.Err("Error message")
 
     // Close logger
     logger.AddCloseHandler(
         func() error {
-            hl.Println("Closed")
+            fmt.Println("Closed")
             return nil
         },
     )

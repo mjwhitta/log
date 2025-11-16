@@ -1,22 +1,43 @@
 package log
 
+import "maps"
+
 // Version is the package version.
-const Version string = "1.7.0"
+const Version string = "1.8.0"
 
 // Consts for log message types
 //
 //nolint:grouper // This is an iota block
 const (
-	TypeDebug   = iota // TypeDebug is a debug message
-	TypeErr            // TypeErr is an error message
-	TypeErrX           // TypeErrX is an error message that will exit
-	TypeGood           // TypeGood is a success message
-	TypeInfo           // TypeInfo is an informative message
-	TypeMsg            // TypeMsg is a generic/plain message
-	TypeSubInfo        // TypeSubInfo is an additional info message
-	TypeWarn           // TypeWarn is a warning message
+	TypeDebug uint64 = iota
+	TypeErr
+	TypeErrX // An error message that will also exit
+	TypeGood
+	TypeInfo
+	TypeMsg // Generic message
+	TypeSubInfo
+	TypeWarn
 )
 
-// Timestamp is used to determine whether a timestamp is printed to
-// stdout with the message.
-var Timestamp bool
+var (
+	// Prefixes allows you to customize each log message prefix.
+	Prefixes map[uint64]string = map[uint64]string{
+		TypeDebug:   "[#]",
+		TypeErr:     "[!]",
+		TypeErrX:    "[!]",
+		TypeGood:    "[+]",
+		TypeInfo:    "[*]",
+		TypeSubInfo: "[=]",
+		TypeWarn:    "[-]",
+	}
+
+	// Timestamp is used to determine whether a timestamp is printed
+	// to stdout with the message.
+	Timestamp bool
+
+	defaultPrefixes map[uint64]string
+)
+
+func init() {
+	defaultPrefixes = maps.Clone(Prefixes)
+}

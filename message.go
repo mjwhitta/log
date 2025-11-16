@@ -1,6 +1,7 @@
 package log
 
 import (
+	"maps"
 	"time"
 
 	hl "github.com/mjwhitta/hilighter"
@@ -8,16 +9,17 @@ import (
 
 // Message is struct containing all message related data.
 type Message struct {
-	Discard      bool
+	Discard bool
+	Raw     string
+	Type    uint64
+
 	preprocessed string
-	Raw          string
 	text         string
 	timestamp    string
-	Type         uint8
 }
 
 // NewMessage will return a new Message instance.
-func NewMessage(msgType uint8, msg string) (m *Message) {
+func NewMessage(msgType uint64, msg string) (m *Message) {
 	var ts string = time.Now().Format(time.RFC3339)
 
 	m = &Message{
@@ -32,22 +34,34 @@ func NewMessage(msgType uint8, msg string) (m *Message) {
 }
 
 func (m *Message) build() {
-	switch m.Type {
-	case TypeDebug:
-		m.text = hl.Magenta("[#] " + m.Raw)
-	case TypeErr, TypeErrX:
-		m.text = hl.Red("[!] " + m.Raw)
-	case TypeGood:
-		m.text = hl.Green("[+] " + m.Raw)
-	case TypeInfo:
-		m.text = hl.White("[*] " + m.Raw)
-	case TypeSubInfo:
-		m.text = hl.Cyan("[=] " + m.Raw)
-	case TypeWarn:
-		m.text = hl.Yellow("[-] " + m.Raw)
-	default:
-		m.text = m.Raw
+	var prefix string
+
+	if Prefixes == nil {
+		Prefixes = maps.Clone(defaultPrefixes)
 	}
+
+	prefix = Prefixes[m.Type]
+
+	if prefix != "" {
+		switch m.Type {
+		case TypeDebug:
+			prefix = hl.Magenta(prefix)
+		case TypeErr, TypeErrX:
+			prefix = hl.Red(prefix)
+		case TypeGood:
+			prefix = hl.Green(prefix)
+		case TypeInfo:
+			prefix = hl.Blue(prefix)
+		case TypeSubInfo:
+			prefix = hl.Cyan(prefix)
+		case TypeWarn:
+			prefix = hl.Yellow(prefix)
+		}
+
+		prefix += " "
+	}
+
+	m.text = prefix + m.Raw
 }
 
 // Preprocessed will return the preprocessed message text.
