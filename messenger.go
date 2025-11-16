@@ -188,7 +188,7 @@ func (m *Messenger) Infof(format string, args ...any) error {
 	return m.Info(fmt.Sprintf(format, args...))
 }
 
-// Log allows for loggin of custom message types.
+// Log allows for logging of custom message types.
 func (m *Messenger) Log(msg *Message) error {
 	var e error
 
