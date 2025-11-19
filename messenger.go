@@ -3,11 +3,11 @@ package log
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 	"sync"
 
 	"github.com/mjwhitta/errors"
 	hl "github.com/mjwhitta/hilighter"
+	"github.com/mjwhitta/pathname"
 )
 
 // CloseHandler is a function pointer. CloseHandlers are called when
@@ -50,7 +50,7 @@ func NewFileMessenger(fn string, ts ...bool) (*Messenger, error) {
 		return nil, errors.New("no filename provided")
 	}
 
-	if f, e = os.Create(filepath.Clean(fn)); e != nil {
+	if f, e = os.Create(pathname.ExpandPath(fn)); e != nil {
 		return nil, errors.Newf("failed to create %s: %w", fn, e)
 	}
 
