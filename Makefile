@@ -3,5 +3,5 @@
 
 ifneq ($(unameS),windows)
 spellcheck:
-	@codespell -f -L ERRO -S ".git,gomk,Makefile,*.pem,README.md"
+	@codespell -f -L erro,hilighter -S "*.pem,.git,go.*,gomk"
 endif
