@@ -19,7 +19,8 @@ type Message struct {
 }
 
 // NewMessage will return a new Message instance.
-func NewMessage(msgType uint64, msg string) (m *Message) {
+func NewMessage(msgType uint64, msg string) *Message {
+	var m *Message
 	var ts string = time.Now().Format(time.RFC3339)
 
 	m = &Message{
@@ -30,7 +31,7 @@ func NewMessage(msgType uint64, msg string) (m *Message) {
 	}
 	m.build()
 
-	return
+	return m
 }
 
 func (m *Message) build() {
