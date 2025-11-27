@@ -4,6 +4,6 @@ go 1.24.0
 
 require (
 	github.com/mjwhitta/errors v1.0.7
-	github.com/mjwhitta/hilighter v1.14.3
+	github.com/mjwhitta/hilighter v1.14.4
 	github.com/mjwhitta/pathname v1.3.1
 )
