@@ -3,7 +3,7 @@ package log
 import "maps"
 
 // Version is the package version.
-const Version string = "1.8.7"
+const Version string = "1.8.8"
 
 // Consts for log message types
 //
